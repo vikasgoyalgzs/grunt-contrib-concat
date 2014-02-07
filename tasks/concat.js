@@ -32,6 +32,24 @@ module.exports = function(grunt) {
     var banner = grunt.template.process(options.banner);
     var footer = grunt.template.process(options.footer);
 
+    //If useIndex is set
+    if (options.useIndex && option.indexPath) {
+        if (!grunt.file.exists(indexPath)) {
+            grunt.log.warn('Index file "' + indexPath + '" not found.');
+            return false;
+        }
+        var indexContents = grunt.file.read(indexPath);
+        //read script tags
+        var scriptTagsPattern = /<script.+?src="(.+?)".*?><\/script>/gm;
+
+        var match;
+
+        while (match = scriptTagsPattern.exec(indexContents)) {
+            this.files.push(match[1]);
+        }
+
+    }
+
     // Iterate over all src-dest file pairs.
     this.files.forEach(function(f) {
       // Concat banner + specified files + footer.
